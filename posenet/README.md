@@ -1,40 +1,40 @@
-# Pose Detection in the Browser: PoseNet Model
+# 浏览器中的姿势检测：PoseNet模型
 
-This package contains a standalone model called PoseNet, as well as some demos, for running real-time pose estimation in the browser using TensorFlow.js.
+该包包含一个名为PoseNet的独立模型，以及一些演示，用于使用TensorFlow.js在浏览器中运行实时姿态估计。
 
-[Try the demo here!](https://storage.googleapis.com/tfjs-models/demos/posenet/camera.html)
+[在这里试试吧！](https://storage.googleapis.com/tfjs-models/demos/posenet/camera.html)
 
 <img src="https://raw.githubusercontent.com/irealva/tfjs-models/master/posenet/demos/camera.gif" alt="cameraDemo" style="width: 600px;"/>
 
-PoseNet can be used to estimate either a single pose or multiple poses, meaning there is a version of the algorithm that can detect only one person in an image/video and one version that can detect multiple persons in an image/video.
+PoseNet可用于估计单个姿势或多个姿势，这意味着存在可以仅检测图像/视频中的一个人的算法版本以及可以检测图像/视频中的多个人的一个版本。
 
-[Refer to this blog post](https://medium.com/tensorflow/real-time-human-pose-estimation-in-the-browser-with-tensorflow-js-7dd0bc881cd5) for a high-level description of PoseNet running on Tensorflow.js.
+[请参阅此博客文章](https://medium.com/tensorflow/real-time-human-pose-estimation-in-the-browser-with-tensorflow-js-7dd0bc881cd5)有关在Tensorflow.js上运行的PoseNet的高级描述。
 
-To keep track of issues we use the [tensorflow/tfjs](https://github.com/tensorflow/tfjs) Github repo.
+我们使用[tensorflow/tfjs](https://github.com/tensorflow/tfjs) Github仓库跟踪问题
 
-## Installation
+## 安装
 
-You can use this as standalone es5 bundle like this:
+您可以将此作为独立的es5包使用，如下所示：
 
 ```html
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/posenet"></script>
 ```
 
-Or you can install it via npm for use in a TypeScript / ES6 project.
+或者您可以通过npm安装它以在TypeScript / ES6项目中使用。
 
 ```sh
 npm install @tensorflow-models/posenet
 ```
 
-## Usage
+## 用法
 
-Either a single pose or multiple poses can be estimated from an image.
-Each methodology has its own algorithm and set of parameters.
+可以从图像预测单个姿势或多个姿势。
+每种方法都有自己的算法和参数集。
 
-### Keypoints
+### 关键点
 
-All keypoints are indexed by part id.  The parts and their ids are:
+所有关键点都按部件ID索引。 组件及其ID是：
 
 | Id | Part |
 | -- | -- |
@@ -56,23 +56,23 @@ All keypoints are indexed by part id.  The parts and their ids are:
 | 15 | leftAnkle |
 | 16 | rightAnkle |
 
-### Loading a pre-trained PoseNet Model
+### 加载预先训练的PoseNet模型
 
-In the first step of pose estimation, an image is fed through a pre-trained model.  PoseNet **comes with a few different versions of the model,** each corresponding to a MobileNet v1 architecture with a specific multiplier. To get started, a model must be loaded from a checkpoint, with the MobileNet architecture specified by the multiplier:
+在姿势预测的第一步中，图像是通过预先训练的模型输入的。 PoseNet **附带了几个不同版本的模型，**每个版本都对应一个具有特定乘数的MobileNet v1架构。 首先，必须从检查点加载模型，并使用乘数指定的MobileNet体系结构：
 
 ```javascript
 const net = await posenet.load(multiplier);
 ```
 
-#### Inputs
+#### 输入
 
-* **multiplier** - An optional number with values: `1.01`, `1.0`, `0.75`, or `0.50`. Defaults to `1.01`.   It is the float multiplier for the depth (number of channels) for all convolution operations. The value corresponds to a MobileNet architecture and checkpoint.  The larger the value, the larger the size of the layers, and more accurate the model at the cost of speed.  Set this to a smaller value to increase speed at the cost of accuracy.
+* **乘数**  - 一个可选数字，其值为：`1.01`，`1.0`，`0.75`或`0.50`。 默认为`1.01`。 它是所有卷积运算的深度（通道数）的浮点乘数。 该值对应于MobileNet体系结构和检查点。 值越大，层的尺寸越大，并且以速度为代价的模型越精确。 将其设置为较小的值，以提高准确性为代价。
 
-**By default,** PoseNet loads a model with a **`0.75`** multiplier.  This is recommended for computers with **mid-range/lower-end GPUS.**  A model with a **`1.00`** muliplier is recommended for computers with **powerful GPUS.**  A model with a **`0.50`** architecture is recommended for **mobile.**
+**默认情况下，**PoseNet加载一个带有乘数为 **`0.75`** 的模型。 对于具有**中档/低档GPUS**的计算机，建议使用此选项。对于具有功能**强大的GPUS**的计算机，建议使用带有乘数为`1.00`的型号。**带**的型号 建议**移动设备**使用乘数为`0.50` 架构。
 
-### Single-Person Pose Estimation
+### 单人姿态预测
 
-Single pose estimation is the simpler and faster of the two algorithms. Its ideal use case is for when there is only one person in the image. The disadvantage is that if there are multiple persons in an image, keypoints from both persons will likely be estimated as being part of the same single pose—meaning, for example, that person #1’s left arm and person #2’s right knee might be conflated by the algorithm as belonging to the same pose.
+单个姿态预测是两种算法中更简单和更快速的。 它的理想用例是图像中只有一个人。 缺点是如果图像中有多个人，那么来自两个人的关键点可能被估计为同一个单一姿势的一部分 - 意味着，例如，＃1的左臂和第2个人的右膝可能会混淆 通过算法属于相同的姿势。
 
 ```javascript
 const net = await posenet.load();
@@ -80,21 +80,24 @@ const net = await posenet.load();
 const pose = await net.estimateSinglePose(image, imageScaleFactor, flipHorizontal, outputStride);
 ```
 
-#### Inputs
+#### 输入
 
-* **image** - ImageData|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement
-   The input image to feed through the network.
-* **imageScaleFactor** - A number between 0.2 and 1.0. Defaults to 0.50.   What to scale the image by before feeding it through the network.  Set this number lower to scale down the image and increase the speed when feeding through the network at the cost of accuracy.
-* **flipHorizontal** - Defaults to false.  If the poses should be flipped/mirrored  horizontally.  This should be set to true for videos where the video is by default flipped horizontally (i.e. a webcam), and you want the poses to be returned in the proper orientation.
-* **outputStride** - the desired stride for the outputs when feeding the image through the model.  Must be 32, 16, 8.  Defaults to 16.  The higher the number, the faster the performance but slower the accuracy, and visa versa.
+* **image**  -  ImageData | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement
+    输入图像通过网络提供。
 
-#### Returns
+* **imageScaleFactor** - 数字介于0.2和1.0之间。 默认为0.50。 在通过网络馈送图像之前缩放图像的内容。 将此数字设置得较低以缩小图像，并以牺牲精度为代价提高通过网络的速度。
 
-It returns a `pose` with a confidence score and an array of keypoints indexed by part id, each with a score and position.
+* **flipHorizontal** - 默认为false。 如果姿势应该水平翻转/镜像。 对于视频默认水平翻转的视频（即网络摄像头），应将此设置为true，并且您希望以正确的方向返回姿势。
 
-#### Example Usage
+* **outputStride** - 通过模型输送图像时所需的输出步幅。 必须为32,16,8。默认为16.数字越大，性能越快但准确度越低，反之亦然。
 
-##### via Script Tag
+#### 结果
+
+它返回一个带有置信度得分的`pose`和一个由组件id索引的关键点数组，每个关键点都有一个得分和位置。
+
+#### 用法示例
+
+##### 浏览器环境直接引用脚本：
 
 ```html
 <html>
@@ -125,7 +128,11 @@ It returns a `pose` with a confidence score and an array of keypoints indexed by
 </html>
 ```
 
-###### via NPM
+###### 通过NPM引用：
+```sh
+npm install --save @tensorflow/tfjs
+npm install --save @tensorflow-models/posenet
+```
 
 ```javascript
 import * as posenet from '@tensorflow-models/posenet';
@@ -150,7 +157,7 @@ console.log(pose);
 
 ```
 
-which would produce the output:
+这将产生输出：
 
 ```json
 {
@@ -296,9 +303,9 @@ which would produce the output:
 }
 ```
 
-### Multi-Person Pose Estimation
+### 多人姿态预测
 
-Multiple Pose estimation can decode multiple poses in an image. It is more complex and slightly slower than the single pose-algorithm, but has the advantage that if multiple people appear in an image, their detected keypoints are less likely to be associated with the wrong pose. Even if the use case is to detect a single person’s pose, this algorithm may be more desirable in that the accidental effect of two poses being joined together won’t occur when multiple people appear in the image. It uses the `Fast greedy decoding` algorithm from the research paper [PersonLab: Person Pose Estimation and Instance Segmentation with a Bottom-Up, Part-Based, Geometric Embedding Model](https://arxiv.org/pdf/1803.08225.pdf).
+多姿态预测可以解码图像中的多个姿势。 它比单个姿势算法更复杂且稍慢，但具有如下优点：如果图像中出现多个人，则他们检测到的关键点不太可能与错误姿势相关联。 即使用例是检测单个人的姿势，该算法也可能是更理想的，因为当多个人出现在图像中时，两个姿势连接在一起的意外效果将不会发生。 它使用了研究论文中的`Fast greedy decoding`(快速贪婪解码)算法[PersonLab: Person Pose Estimation and Instance Segmentation with a Bottom-Up, Part-Based, Geometric Embedding Model](https://arxiv.org/pdf/1803.08225.pdf).
 
 ```javascript
 const net = await posenet.load();
@@ -306,22 +313,27 @@ const net = await posenet.load();
 const poses = await net.estimateMultiplePoses(image, imageScaleFactor, flipHorizontal, outputStride, maxPoseDetections, scoreThreshold, nmsRadius);
 ```
 
-#### Inputs
+#### 输入
 
 * **image** - ImageData|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement
-   The input image to feed through the network.
-* **imageScaleFactor** - A number between 0.2 and 1.0. Defaults to 0.50.   What to scale the image by before feeding it through the network.  Set this number lower to scale down the image and increase the speed when feeding through the network at the cost of accuracy.
-* **flipHorizontal** - Defaults to false.  If the poses should be flipped/mirrored  horizontally.  This should be set to true for videos where the video is by default flipped horizontally (i.e. a webcam), and you want the poses to be returned in the proper orientation.
-* **outputStride** - the desired stride for the outputs when feeding the image through the model.  Must be 32, 16, 8.  Defaults to 16.  The higher the number, the faster the performance but slower the accuracy, and visa versa.
-* **maxPoseDetections** (optional) - the maximum number of poses to detect. Defaults to 5.
-* **scoreThreshold** (optional) - Only return instance detections that have root part score greater or equal to this value. Defaults to 0.5.
-* **nmsRadius** (optional) - Non-maximum suppression part distance. It needs to be strictly positive. Two parts suppress each other if they are less than `nmsRadius` pixels away. Defaults to 20.
+  输入图像通过网络提供。
+* **imageScaleFactor** - 数字介于0.2和1.0之间。 默认为0.50。 在通过网络馈送图像之前缩放图像的内容。 将此数字设置得较低以缩小图像，并以牺牲精度为代价提高通过网络的速度。
 
-#### Returns
+* **flipHorizontal** - 默认为false。 如果姿势应该水平翻转/镜像。 对于视频默认水平翻转的视频（即网络摄像头），应将此设置为true，并且您希望以正确的方向返回姿势。
 
-It returns a `promise` that resolves with an array of `poses`, each with a confidence score and an array of `keypoints` indexed by part id, each with a score and position.
+* **outputStride** - 通过模型输送图像时所需的输出步幅。 必须为32,16,8。默认为16.数字越大，性能越快但准确度越低，反之亦然。
 
-##### via Script Tag
+* **maxPoseDetections** (可选) - 要检测的最大姿势数。 默认为5。
+
+* **scoreThreshold** (可选) - 仅返回根部分得分大于或等于此值的实例检测。 默认为0.5。
+
+* **nmsRadius** (可选) - 非最大抑制部分距离。 它必须是严格积极的。 如果它们小于`nmsRadius`像素，则两个部分相互抑制。 默认为20。
+
+#### 结果
+
+它返回一个`promise`，用一系列`pose`解析，每个都有一个置信度分数和一个由组件id索引的`keypoints`数组，每个都有一个得分和位置。
+
+##### 浏览器环境直接引用脚本：
 
 ```html
 <html>
@@ -353,7 +365,11 @@ It returns a `promise` that resolves with an array of `poses`, each with a confi
 </html>
 ```
 
-###### via NPM
+###### 通过NPM引用：
+```sh
+npm install --save @tensorflow/tfjs
+npm install --save @tensorflow-models/posenet
+```
 
 ```javascript
 import * as posenet from '@tensorflow-models/posenet';
@@ -380,8 +396,8 @@ const poses = estimateMultiplePosesOnImage(imageElement);
 console.log(poses);
 ```
 
-This produces the output:
-```
+这会产生输出：
+```json
 [
   // pose 1
   {
@@ -505,7 +521,7 @@ This produces the output:
 ]
 ```
 
-## Developing the Demos
+## 开发 Demo
 
-Details for how to run the demos are included in the `demos/` folder.
+有关如何运行演示的详细信息包含在`demos /`文件夹中。
 
